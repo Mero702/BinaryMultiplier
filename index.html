@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Multiplier</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            color: whitesmoke;
+            background-color: #3c3c3c;
+        }
+        body {
+            height: 100vh;
+            width: 100vw;
+            display: grid;
+            align-content: stretch;
+            justify-items: stretch;
+        }
+        body > * {
+            padding: 1ch;
+        } 
+    </style>
+</head>
+<body>
+    <div class="input">
+        <h2>Decimal Input</h2>
+        <form action="/" id="dform">
+        <label for="multiplikand">Multiplikand</label>
+        <input type="number" id="multiplikand">
+        <label for="multiplikator">Multiplikator</label>
+        <input type="number" id="multiplikator">
+        <button type="submit">Multiply</button>
+        </form>
+        <p>or</p>
+        <h2>Binary Input</h2>
+        <form action="/" id="bform">
+        <label for="bmultiplikand">Multiplikand</label>
+        <input type="text" id="bmultiplikand">
+        <label for="bmultiplikator">Multiplikator</label>
+        <input type="text" id="bmultiplikator">
+        <button type="submit">Multiply</button>
+        </form>
+    </div>
+   <textarea name="out" id="out" cols="32" rows="32"></textarea> 
+   <script>
+        var out = document.getElementById('out')
+        let dmultiplikand = document.getElementById('multiplikand')
+        let dmultiplikator = document.getElementById('multiplikator')
+        let dmultiplikation = document.getElementById('dform')
+        let bmultiplikand = document.getElementById('bmultiplikand')
+        let bmultiplikator = document.getElementById('bmultiplikator')
+        let bmultiplikation = document.getElementById('bform')
+
+        dmultiplikation.addEventListener('submit', function(e){
+            e.preventDefault()
+            let multiplikand = parseInt(dmultiplikand.value)
+            let multiplikator = parseInt(dmultiplikator.value)
+            calc(multiplikand, multiplikator)
+        })
+        bmultiplikation.addEventListener('submit', function(e){
+            e.preventDefault()
+            let multiplikand = parseInt(bmultiplikand.value, 2)
+            let multiplikator = parseInt(bmultiplikator.value, 2)
+            calc(multiplikand, multiplikator)
+        })
+        function printBits(n, bits) {
+              var bits = [];
+              for (var i = 0; i < 16; i++) {
+                bits.push(n & 1);
+                n >>= 1;
+              }
+              return bits.reverse().join('');
+       }
+        //calc(0b1001001101011101, 0b0111101000111010)
+        function calc(multiplikand, multiplikator){
+            out.value = ''
+            let product = 0b000000000000
+            for(var i = 0; i < 16; i++){
+                product += multiplikand * (1 & multiplikator)
+                let overflow = product > 0b1111111111111111
+                out.value += 'Add  ' + ((overflow)? '1' : ' ' )+ printBits(product, 17)+ ' ' + printBits(multiplikator,16) + '\n'
+                multiplikator = multiplikator >> 1
+                multiplikator |= (product & 0b1) << 15
+                product = product >> 1
+                out.value += 'Shift ' + printBits(product,16) +' '+printBits(multiplikator,16)+ '\n'
+            }
+            out.value += 'Result: ' + printBits(product,16) +' '+printBits(multiplikator,16)+ 'bin\n'
+            out.value += 'Result: ' + (product << 15 | multiplikator).toString() + 'dec'
+        }
+   </script>
+</body>
+</html>
